@@ -12,6 +12,10 @@
     <string name="menu_slideshow">Slideshow</string>
 
     <string name="home_second">Home Second</string>
-    <string name="login_button">Login</string>
+    <string name="login_button_text">Login</string>
     <string name="hint_text">message:</string>
+    <string name="email_hint_text">email</string>
+    <string name="password_hint_text">password</string>
+    <string name="no_account_text">Don\'t have an account?</string>
+    <string name="sign_up_button_text">SIGN UP HERE</string>
 </resources>
