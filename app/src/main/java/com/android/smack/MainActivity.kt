@@ -38,10 +38,14 @@ class MainActivity : AppCompatActivity() {
 
     fun loginBtnNavHeaderClicked(view: View) {
         val loginIntent = Intent(this, LoginActivity::class.java)
-        startActivity(loginIntent)
+        startActivity(loginIntent) 
     }
 
     fun addUserButtonClicked(view: View) {
+
+    }
+
+    fun sendMessageButtonClicked(view : View){
 
     }
 }
