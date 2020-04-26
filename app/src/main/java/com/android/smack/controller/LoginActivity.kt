@@ -1,9 +1,10 @@
-package com.android.smack
+package com.android.smack.controller
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.android.smack.R
 
 class LoginActivity : AppCompatActivity() {
 
@@ -14,7 +15,8 @@ class LoginActivity : AppCompatActivity() {
 
 
     fun signUpButtonClicked(view: View) {
-        val createUserIntent = Intent(this,CreateUserActivity::class.java)
+        val createUserIntent = Intent(this,
+            CreateUserActivity::class.java)
         startActivity(createUserIntent)
     }
 

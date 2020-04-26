@@ -1,4 +1,4 @@
-package com.android.smack
+package com.android.smack.controller
 
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
