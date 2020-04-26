@@ -3,8 +3,10 @@ package com.android.smack.controller
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import com.android.smack.R
+import com.android.smack.services.AuthService
 import kotlinx.android.synthetic.main.activity_create_user.*
 import java.util.*
 
@@ -36,7 +38,8 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     fun createUserButtonClicked(view: View){
-
+        AuthService.registerUser(this,"test@test.com","test1234"){isCompleted->
+        }
     }
 
     fun generateUserAvatar(view: View){
