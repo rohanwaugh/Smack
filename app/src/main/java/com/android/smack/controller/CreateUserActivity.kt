@@ -39,6 +39,11 @@ class CreateUserActivity : AppCompatActivity() {
 
     fun createUserButtonClicked(view: View){
         AuthService.registerUser(this,"test@test.com","test1234"){isCompleted->
+            if(isCompleted){
+                Log.d("XYZ","Success")
+            }else{
+                Log.d("XYZ","Failure")
+            }
         }
     }
 
