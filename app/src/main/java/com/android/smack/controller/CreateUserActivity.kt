@@ -38,6 +38,7 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     fun createUserButtonClicked(view: View){
+        val userName = createUsernameText.text.toString()
         val email = createEmailText.text.toString()
         val password = createPasswordText.text.toString()
         AuthService.registerUser(this,email,password){ registerSuccess->
@@ -45,9 +46,11 @@ class CreateUserActivity : AppCompatActivity() {
                 Log.d("XYZ","Register Success")
                 AuthService.loginUser(this,email,password){ loginSuccess->
                     if(loginSuccess){
-                        Log.d("XYZ","Login Success")
-                        Log.d("XYZ",AuthService.authToken)
-                        Log.d("XYZ",AuthService.userEmail)
+                        AuthService.createUser(this,userName,email,userAvatar,avatarColor){createSuccess->
+                            if(createSuccess){
+                                finish()
+                            }
+                        }
                     }
                 }
             }
