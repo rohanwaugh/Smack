@@ -14,6 +14,7 @@ const val PARAM_AVATAR_NAME= "avatarName"
 const val PARAM_AVATAR_COLOR = "avatarColor"
 const val PARAM_AUTHORIZATION = "Authorization"
 const val PARAM_ID = "_id"
+const val DRAWABLE = "drawable"
 
 //Broadcast receiver
 const val BROADCAST_USER_DATA_CHANGE = "BROADCAST_USER_DATA_CHANGE"
