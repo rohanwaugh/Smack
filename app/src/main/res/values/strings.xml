@@ -15,4 +15,8 @@
     <string name="generate_new_avatar_text">Tap to generate user avatar</string>
     <string name="generate_background_color_button_text">generate background color</string>
     <string name="create_user_button_text">CREATE USER</string>
+    <string name="registration_error_text">Registration failed. Please try again</string>
+    <string name="login_error_text">Login failed. Please try again</string>
+    <string name="create_user_error_text">Create User failed. Please try again</string>
+    <string name="user_validation_text">Please fill username, password and email</string>
 </resources>
