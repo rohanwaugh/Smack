@@ -21,4 +21,9 @@
     <string name="user_validation_text">Please fill username, password and email</string>
     <string name="logout_button_text">Logout</string>
     <string name="user_not_found_text">User not found</string>
+    <string name="add_channel_text">Add Channel</string>
+    <string name="channel_name_hint_text">channel name</string>
+    <string name="channel_description_hint_text">channel description</string>
+    <string name="ok_button_text">OK</string>
+    <string name="cancel_button_text">CANCEL</string>
 </resources>

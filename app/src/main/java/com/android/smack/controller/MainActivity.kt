@@ -7,7 +7,10 @@ import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -36,23 +39,31 @@ class MainActivity : AppCompatActivity() {
         )
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+        hideKeyboard()
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            userDataChangeReceiver,
             IntentFilter(BROADCAST_USER_DATA_CHANGE)
         )
 
     }
 
-    private val userDataChangeReceiver = object: BroadcastReceiver(){
+    private val userDataChangeReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context?, intent: Intent) {
-            if(AuthService.isLoggedIn){
+            if (AuthService.isLoggedIn) {
                 userNameNavHeader.text = UserDataService.name
                 userEmailNavHeader.text = UserDataService.email
-                val resourceId = resources.getIdentifier(UserDataService.avatarName,DRAWABLE,
-                    packageName)
+                val resourceId = resources.getIdentifier(
+                    UserDataService.avatarName, DRAWABLE,
+                    packageName
+                )
                 userImageNavHeader.setImageResource(resourceId)
-                userImageNavHeader.setBackgroundColor(UserDataService.returnAvatarColor(UserDataService.avatarColor))
+                userImageNavHeader.setBackgroundColor(
+                    UserDataService.returnAvatarColor(
+                        UserDataService.avatarColor
+                    )
+                )
                 loginBtnNavHeader.text = getString(R.string.logout_button_text)
             }
         }
@@ -68,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loginBtnNavHeaderClicked(view: View) {
-        if(AuthService.isLoggedIn){
+        if (AuthService.isLoggedIn) {
             UserDataService.logout()
             userNameNavHeader.text = ""
             userEmailNavHeader.text = ""
@@ -76,17 +87,43 @@ class MainActivity : AppCompatActivity() {
             userImageNavHeader.setImageResource(R.drawable.profiledefault)
             loginBtnNavHeader.text = getString(R.string.login_button_text)
 
-        }else{
+        } else {
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
         }
     }
 
-    fun addUserButtonClicked(view: View) {
+    fun addChannelButtonClicked(view: View) {
+        if (AuthService.isLoggedIn) {
+            showChannelSelectionDialog()
+        }
+    }
+
+    fun sendMessageButtonClicked(view: View) {
 
     }
 
-    fun sendMessageButtonClicked(view : View){
+    private fun showChannelSelectionDialog() {
+        val builder = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
 
+        builder.setView(dialogView)
+            .setPositiveButton(getString(R.string.ok_button_text)) { _, _ ->
+                val channelName =
+                    dialogView.findViewById<EditText>(R.id.addChannelNameText).text.toString()
+                val channelDesc = dialogView.findViewById<EditText>(R.id.addChannelDescriptionText)
+                    .text.toString()
+                hideKeyboard()
+            }
+            .setNegativeButton(getString(R.string.cancel_button_text)) { _, _ ->
+                hideKeyboard()
+            }.show()
+    }
+
+    private fun hideKeyboard() {
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        if (inputManager.isAcceptingText) {
+            inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
     }
 }

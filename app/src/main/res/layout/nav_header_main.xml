@@ -57,13 +57,13 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
-        android:id="@+id/addUserButton"
+        android:id="@+id/addChannelButton"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="@android:color/transparent"
-        android:onClick="addUserButtonClicked"
+        android:onClick="addChannelButtonClicked"
         android:padding="5dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
