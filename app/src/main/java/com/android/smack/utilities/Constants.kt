@@ -24,3 +24,4 @@ const val BROADCAST_USER_DATA_CHANGE = "BROADCAST_USER_DATA_CHANGE"
 
 //Socket
 const val CHANNEL_EVENT = "newChannel"
+const val CHANNEL_CREATED_EVENT = "channelCreated"

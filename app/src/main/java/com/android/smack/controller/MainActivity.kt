@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -15,14 +16,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.android.smack.R
+import com.android.smack.model.Channel
 import com.android.smack.services.AuthService
+import com.android.smack.services.MessageService
 import com.android.smack.services.UserDataService
-import com.android.smack.utilities.BROADCAST_USER_DATA_CHANGE
-import com.android.smack.utilities.CHANNEL_EVENT
-import com.android.smack.utilities.DRAWABLE
-import com.android.smack.utilities.SOCKET_URL
+import com.android.smack.utilities.*
 import io.socket.client.IO
 import io.socket.client.Socket
+import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
@@ -36,6 +37,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        socket.connect()
+        // socket is listening for incoming channel event
+        socket.on(CHANNEL_CREATED_EVENT, onNewChannel)
+
         val toggle = ActionBarDrawerToggle(
             this,
             drawer_layout,
@@ -46,16 +51,15 @@ class MainActivity : AppCompatActivity() {
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
         hideKeyboard()
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         LocalBroadcastManager.getInstance(this).registerReceiver(
             userDataChangeReceiver,
             IntentFilter(BROADCAST_USER_DATA_CHANGE)
         )
-    }
-
-    override fun onResume() {
-        super.onResume()
-        socket.connect()
     }
 
     override fun onDestroy() {
@@ -130,7 +134,7 @@ class MainActivity : AppCompatActivity() {
                 val channelDesc = dialogView.findViewById<EditText>(R.id.addChannelDescriptionText)
                     .text.toString()
 
-                socket.emit(CHANNEL_EVENT,channelName,channelDesc)
+                socket.emit(CHANNEL_EVENT, channelName, channelDesc)
             }
             .setNegativeButton(getString(R.string.cancel_button_text)) { _, _ ->
             }.show()
@@ -140,6 +144,15 @@ class MainActivity : AppCompatActivity() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         if (inputManager.isAcceptingText) {
             inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+    }
+
+    private val onNewChannel = Emitter.Listener { args ->
+        // This is worker or background thread
+        // to update the UI with new Channel details we have to use runOnUiThread function
+        runOnUiThread {
+            val newChannel = Channel(args[0] as String, args[1] as String, args[2] as String)
+            MessageService.channels.add(newChannel)
         }
     }
 }
