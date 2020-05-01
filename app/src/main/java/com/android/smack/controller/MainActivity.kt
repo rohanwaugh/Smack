@@ -18,12 +18,18 @@ import com.android.smack.R
 import com.android.smack.services.AuthService
 import com.android.smack.services.UserDataService
 import com.android.smack.utilities.BROADCAST_USER_DATA_CHANGE
+import com.android.smack.utilities.CHANNEL_EVENT
 import com.android.smack.utilities.DRAWABLE
+import com.android.smack.utilities.SOCKET_URL
+import io.socket.client.IO
+import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    private val socket = IO.socket(SOCKET_URL)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +51,17 @@ class MainActivity : AppCompatActivity() {
             userDataChangeReceiver,
             IntentFilter(BROADCAST_USER_DATA_CHANGE)
         )
+    }
 
+    override fun onResume() {
+        super.onResume()
+        socket.connect()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        socket.disconnect()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
     }
 
     private val userDataChangeReceiver = object : BroadcastReceiver() {
@@ -100,7 +116,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendMessageButtonClicked(view: View) {
-
+        hideKeyboard()
     }
 
     private fun showChannelSelectionDialog() {
@@ -108,15 +124,15 @@ class MainActivity : AppCompatActivity() {
         val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
 
         builder.setView(dialogView)
-            .setPositiveButton(getString(R.string.ok_button_text)) { _, _ ->
+            .setPositiveButton(getString(R.string.add_button_text)) { _, _ ->
                 val channelName =
                     dialogView.findViewById<EditText>(R.id.addChannelNameText).text.toString()
                 val channelDesc = dialogView.findViewById<EditText>(R.id.addChannelDescriptionText)
                     .text.toString()
-                hideKeyboard()
+
+                socket.emit(CHANNEL_EVENT,channelName,channelDesc)
             }
             .setNegativeButton(getString(R.string.cancel_button_text)) { _, _ ->
-                hideKeyboard()
             }.show()
     }
 
