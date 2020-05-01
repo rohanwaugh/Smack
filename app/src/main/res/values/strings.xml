@@ -20,4 +20,5 @@
     <string name="create_user_error_text">Create User failed. Please try again</string>
     <string name="user_validation_text">Please fill username, password and email</string>
     <string name="logout_button_text">Logout</string>
+    <string name="user_not_found_text">User not found</string>
 </resources>

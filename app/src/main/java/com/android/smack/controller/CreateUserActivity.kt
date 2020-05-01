@@ -101,8 +101,8 @@ class CreateUserActivity : AppCompatActivity() {
 
     }
 
-    fun errorToast(toatMessage: String) {
-        Toast.makeText(this, toatMessage, Toast.LENGTH_SHORT).show()
+    private fun errorToast(toastMessage: String) {
+        Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
         enableSpinner(false)
     }
 
