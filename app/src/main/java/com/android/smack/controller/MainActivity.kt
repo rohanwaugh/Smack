@@ -11,6 +11,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -18,12 +19,12 @@ import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.android.smack.R
 import com.android.smack.model.Channel
+import com.android.smack.model.Message
 import com.android.smack.services.AuthService
 import com.android.smack.services.MessageService
 import com.android.smack.services.UserDataService
 import com.android.smack.utilities.*
 import io.socket.client.IO
-import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         socket.connect()
         // socket is listening for incoming channel event
         socket.on(CHANNEL_CREATED_EVENT, onNewChannel)
+        socket.on(MESSAGE_CREATED_EVENT, onNewMessage)
 
         val toggle = ActionBarDrawerToggle(
             this,
@@ -154,7 +156,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendMessageButtonClicked(view: View) {
-        hideKeyboard()
+        if(SmackApplication.prefs.isLoggedIn && messageTextField.text.isNotEmpty() && selectedChannel!=null){
+            // Send a new message to API
+            socket.emit(MESSAGE_EVENT,messageTextField.text.toString(),UserDataService.id,selectedChannel!!.id,
+                UserDataService.name,UserDataService.avatarName,UserDataService.avatarColor)
+            messageTextField.text.clear()
+            hideKeyboard()
+        }
     }
 
     private fun showChannelSelectionDialog() {
@@ -189,6 +197,22 @@ class MainActivity : AppCompatActivity() {
             val newChannel = Channel(args[0] as String, args[1] as String, args[2] as String)
             MessageService.channels.add(newChannel)
             channelAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private val onNewMessage = Emitter.Listener {args ->
+        runOnUiThread{
+            val messageBody = args[0] as String
+            val channelId = args[2] as String
+            val userName = args[3] as String
+            val avatar = args[4] as String
+            val avatarColor = args[5] as String
+            val messageId = args[6] as String
+            val messageTime = args[7] as String
+
+            val newMessage = Message(messageBody,channelId,userName,avatar,avatarColor,messageId,messageTime)
+            MessageService.messages.add(newMessage)
+            Log.d("MESSAGE",newMessage.message)
         }
     }
 }
