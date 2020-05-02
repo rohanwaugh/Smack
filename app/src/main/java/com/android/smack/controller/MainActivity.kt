@@ -6,18 +6,19 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.smack.R
+import com.android.smack.adapter.MessageRecyclerViewAdapter
 import com.android.smack.model.Channel
 import com.android.smack.model.Message
 import com.android.smack.services.AuthService
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     private val socket = IO.socket(SOCKET_URL)
     lateinit var channelAdapter: ArrayAdapter<Channel>
+    lateinit var messageAdapter: MessageRecyclerViewAdapter
     var selectedChannel:Channel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         )
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
-        setupChannelAdapter()
+        setupAdapters()
 
         channel_list.setOnItemClickListener { _, _, position, _ ->
             selectedChannel = MessageService.channels[position]
@@ -122,17 +124,21 @@ class MainActivity : AppCompatActivity() {
         if(selectedChannel!=null){
             MessageService.getMessages(selectedChannel!!.id){complete->
                 if(complete){
-
+                   updateMessageRecyclerview()
                 }
             }
         }
 
     }
 
-    private fun setupChannelAdapter() {
+    private fun setupAdapters() {
         channelAdapter =
             ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
         channel_list.adapter = channelAdapter
+
+        messageAdapter = MessageRecyclerViewAdapter(this,MessageService.messages)
+        messageRecyclerView.adapter = messageAdapter
+        messageRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 
     override fun onBackPressed() {
@@ -146,12 +152,15 @@ class MainActivity : AppCompatActivity() {
     fun loginBtnNavHeaderClicked(view: View) {
         if (SmackApplication.prefs.isLoggedIn) {
             UserDataService.logout()
+            channelAdapter.notifyDataSetChanged()
+            messageAdapter.notifyDataSetChanged()
             userNameNavHeader.text = ""
             userEmailNavHeader.text = ""
             userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
             userImageNavHeader.setImageResource(R.drawable.profiledefault)
             loginBtnNavHeader.text = getString(R.string.login_button_text)
-
+            mainChannelName.text = getString(R.string.please_login_text)
+            drawer_layout.closeDrawer(GravityCompat.START)
         } else {
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
@@ -223,9 +232,17 @@ class MainActivity : AppCompatActivity() {
 
                     val newMessage = Message(messageBody,channelId,userName,avatar,avatarColor,messageId,messageTime)
                     MessageService.messages.add(newMessage)
+                    updateMessageRecyclerview()
                 }
 
             }
+        }
+    }
+
+    private fun updateMessageRecyclerview(){
+        messageAdapter.notifyDataSetChanged()
+        if(messageAdapter.itemCount > 0){
+            messageRecyclerView.scrollToPosition(messageAdapter.itemCount - 1)
         }
     }
 }

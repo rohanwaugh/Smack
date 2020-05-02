@@ -26,4 +26,5 @@
     <string name="channel_description_hint_text">channel description</string>
     <string name="add_button_text">ADD</string>
     <string name="cancel_button_text">CANCEL</string>
+    <string name="please_login_text">Please Log in</string>
 </resources>
