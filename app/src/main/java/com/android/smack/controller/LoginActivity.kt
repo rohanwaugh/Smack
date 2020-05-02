@@ -21,8 +21,10 @@ class LoginActivity : AppCompatActivity() {
 
 
     fun signUpButtonClicked(view: View) {
-        val createUserIntent = Intent(this,
-            CreateUserActivity::class.java)
+        val createUserIntent = Intent(
+            this,
+            CreateUserActivity::class.java
+        )
         startActivity(createUserIntent)
         finish()
     }
@@ -34,21 +36,21 @@ class LoginActivity : AppCompatActivity() {
 
         if (email.isNotEmpty() && password.isNotEmpty()) {
             hideKeyboard()
-            AuthService.loginUser(this, email, password) { loginSuccess ->
+            AuthService.loginUser(email, password) { loginSuccess ->
                 if (loginSuccess) {
                     AuthService.findUserByEmail(this) { findSuccess ->
                         if (findSuccess) {
                             enableSpinner(false)
                             finish()
-                        }else{
+                        } else {
                             errorToast(getString(R.string.user_not_found_text))
                         }
                     }
-                }else{
+                } else {
                     errorToast(getString(R.string.login_error_text))
                 }
             }
-        }else{
+        } else {
             errorToast(getString(R.string.user_validation_text))
             enableSpinner(false)
         }
@@ -69,10 +71,10 @@ class LoginActivity : AppCompatActivity() {
         signUpButton.isEnabled = !isEnable
     }
 
-    private fun hideKeyboard(){
+    private fun hideKeyboard() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        if(inputManager.isAcceptingText){
-            inputManager.hideSoftInputFromWindow(currentFocus?.windowToken,0)
+        if (inputManager.isAcceptingText) {
+            inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
     }
 }

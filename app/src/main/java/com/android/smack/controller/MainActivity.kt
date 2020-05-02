@@ -27,12 +27,14 @@ import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private val socket = IO.socket(SOCKET_URL)
     lateinit var channelAdapter: ArrayAdapter<Channel>
+    var selectedChannel:Channel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,8 +56,14 @@ class MainActivity : AppCompatActivity() {
         toggle.syncState()
         setupChannelAdapter()
 
-        if(SmackApplication.prefs.isLoggedIn){
-            AuthService.findUserByEmail(this){}
+        channel_list.setOnItemClickListener { _, _, position, _ ->
+            selectedChannel = MessageService.channels[position]
+            drawer_layout.closeDrawer(GravityCompat.START)
+            updateChannelText()
+        }
+
+        if (SmackApplication.prefs.isLoggedIn) {
+            AuthService.findUserByEmail(this) {}
         }
     }
 
@@ -92,14 +100,22 @@ class MainActivity : AppCompatActivity() {
                 )
                 loginBtnNavHeader.text = getString(R.string.logout_button_text)
 
-                MessageService.getChannels(context) { success ->
+                MessageService.getChannels { success ->
                     if (success) {
-                        channelAdapter.notifyDataSetChanged()
+                        if(MessageService.channels.count() > 0){
+                            selectedChannel = MessageService.channels[0]
+                            channelAdapter.notifyDataSetChanged()
+                            updateChannelText()
+                        }
+
                     }
                 }
             }
         }
+    }
 
+    fun updateChannelText(){
+        mainChannelName.text = "#${selectedChannel?.name}"
     }
 
     private fun setupChannelAdapter() {
@@ -165,7 +181,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val onNewChannel = Emitter.Listener { args -> // This is worker or background thread
+    private val onNewChannel = Emitter.Listener { args ->
+        // This is worker or background thread
 
         // to update the UI with new Channel details we have to use runOnUiThread function
         runOnUiThread {

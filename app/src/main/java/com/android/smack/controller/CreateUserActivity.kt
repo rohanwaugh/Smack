@@ -65,13 +65,12 @@ class CreateUserActivity : AppCompatActivity() {
         val password = createPasswordText.text.toString()
 
         if (userName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-            AuthService.registerUser(this, email, password) { registerSuccess ->
+            AuthService.registerUser(email, password) { registerSuccess ->
                 if (registerSuccess) {
                     Log.d("XYZ", "Register Success")
-                    AuthService.loginUser(this, email, password) { loginSuccess ->
+                    AuthService.loginUser(email, password) { loginSuccess ->
                         if (loginSuccess) {
                             AuthService.createUser(
-                                this,
                                 userName,
                                 email,
                                 userAvatar,
@@ -79,7 +78,8 @@ class CreateUserActivity : AppCompatActivity() {
                             ) { createSuccess ->
                                 if (createSuccess) {
                                     val userDataChange = Intent(BROADCAST_USER_DATA_CHANGE)
-                                    LocalBroadcastManager.getInstance(this).sendBroadcast(userDataChange)
+                                    LocalBroadcastManager.getInstance(this)
+                                        .sendBroadcast(userDataChange)
                                     enableSpinner(false)
                                     finish()
                                 } else {
