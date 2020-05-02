@@ -1,6 +1,7 @@
 package com.android.smack.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,10 @@ import com.android.smack.R
 import com.android.smack.model.Message
 import com.android.smack.services.UserDataService
 import com.android.smack.utilities.DRAWABLE
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MessageRecyclerViewAdapter(val context: Context, val messageList: ArrayList<Message>) :
     RecyclerView.Adapter<MessageRecyclerViewAdapter.MessageViewHolder>() {
@@ -35,7 +40,7 @@ class MessageRecyclerViewAdapter(val context: Context, val messageList: ArrayLis
 
         fun bindMessage(context: Context, message: Message) {
             userName?.text = message.userName
-            timeStamp?.text = message.messageTime
+            timeStamp?.text = returnDateString(message.messageTime)
             messageBody?.text = message.message
 
             val resourceId =
@@ -44,5 +49,21 @@ class MessageRecyclerViewAdapter(val context: Context, val messageList: ArrayLis
             userImage?.setBackgroundColor(UserDataService.returnAvatarColor(message.avatarColor))
         }
 
+        private fun returnDateString(isoString: String): String {
+            // 2020-05-02T10:56:39.024Z
+            // Monday 4:35 PM
+            val isoFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            isoFormatter.timeZone = TimeZone.getTimeZone("UTC")
+
+            var convertedDate = Date()
+            try {
+                convertedDate = isoFormatter.parse(isoString)
+            } catch (e: ParseException) {
+                Log.d("PARSE", e.localizedMessage)
+            }
+
+            val outDateString = SimpleDateFormat("E, h:mm a", Locale.getDefault())
+            return outDateString.format(convertedDate)
+        }
     }
 }
