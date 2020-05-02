@@ -29,3 +29,9 @@ const val CHANNEL_CREATED_EVENT = "channelCreated"
 const val CHANNEL_NAME = "name"
 const val CHANNEL_DESCRIPTION = "description"
 const val CHANNEL_ID = "_id"
+
+//Shared Preference
+const val SHARED_PREF_FILENAME = "prefs"
+const val SHARED_IS_LOGGED_IN = "isLoggedIn"
+const val SHARED_AUTH_TOKEN = "authToken"
+const val SHARED_USER_EMAIL = "userEmail"

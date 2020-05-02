@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.android.smack.controller.SmackApplication
 import com.android.smack.utilities.*
 import com.android.volley.Request
 import com.android.volley.Response
@@ -14,10 +15,6 @@ import org.json.JSONException
 import org.json.JSONObject
 
 object AuthService {
-
-    var isLoggedIn = false
-    var userEmail = ""
-    var authToken = ""
 
     fun registerUser(
         context: Context,
@@ -47,7 +44,7 @@ object AuthService {
                     return requestBody.toByteArray()
                 }
             }
-        Volley.newRequestQueue(context).add(registerRequest)
+        SmackApplication.prefs.requestQueue.add(registerRequest)
     }
 
     fun loginUser(context: Context, email: String, password: String, complete: (Boolean) -> Unit) {
@@ -61,9 +58,9 @@ object AuthService {
             object : JsonObjectRequest(Method.POST, URL_LOGIN, null, Response.Listener { response ->
                 Log.d("LOGIN SUCCESS", response.toString())
                 try {
-                    userEmail = response.getString(PARAM_USER)
-                    authToken = response.getString(PARAM_TOKEN)
-                    isLoggedIn = true
+                    SmackApplication.prefs.userEmail = response.getString(PARAM_USER)
+                    SmackApplication.prefs.authToken = response.getString(PARAM_TOKEN)
+                    SmackApplication.prefs.isLoggedIn = true
                     complete(true)
                 } catch (e: JSONException) {
                     Log.d("JSON", e.localizedMessage)
@@ -82,7 +79,7 @@ object AuthService {
                     return requestBody.toByteArray()
                 }
             }
-        Volley.newRequestQueue(context).add(loginRequest)
+        SmackApplication.prefs.requestQueue.add(loginRequest)
     }
 
     fun createUser(
@@ -124,11 +121,11 @@ object AuthService {
 
             override fun getHeaders(): MutableMap<String, String> {
                 val headers = HashMap<String, String>()
-                headers.put(PARAM_AUTHORIZATION, "Bearer $authToken")
+                headers.put(PARAM_AUTHORIZATION, "Bearer ${SmackApplication.prefs.authToken}")
                 return headers
             }
         }
-        Volley.newRequestQueue(context).add(createUserRequest)
+        SmackApplication.prefs.requestQueue.add(createUserRequest)
 
     }
 
@@ -136,7 +133,7 @@ object AuthService {
 
         val findUserRequest = object : JsonObjectRequest(
             Method.GET,
-            "$URL_GET_USER$userEmail",
+            "$URL_GET_USER${SmackApplication.prefs.userEmail}",
             null,
             Response.Listener { response ->
                 try {
@@ -160,11 +157,11 @@ object AuthService {
 
             override fun getHeaders(): MutableMap<String, String> {
                 val headers = HashMap<String, String>()
-                headers.put(PARAM_AUTHORIZATION, "Bearer $authToken")
+                headers.put(PARAM_AUTHORIZATION, "Bearer ${SmackApplication.prefs.authToken}")
                 return headers
             }
         }
-        Volley.newRequestQueue(context).add(findUserRequest)
+        SmackApplication.prefs.requestQueue.add(findUserRequest)
     }
 
     fun saveUserData(response: JSONObject) {

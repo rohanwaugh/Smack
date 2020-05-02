@@ -53,6 +53,10 @@ class MainActivity : AppCompatActivity() {
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
         setupChannelAdapter()
+
+        if(SmackApplication.prefs.isLoggedIn){
+            AuthService.findUserByEmail(this){}
+        }
     }
 
     override fun onResume() {
@@ -73,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     private val userDataChangeReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
-            if (AuthService.isLoggedIn) {
+            if (SmackApplication.prefs.isLoggedIn) {
                 userNameNavHeader.text = UserDataService.name
                 userEmailNavHeader.text = UserDataService.email
                 val resourceId = resources.getIdentifier(
@@ -113,7 +117,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loginBtnNavHeaderClicked(view: View) {
-        if (AuthService.isLoggedIn) {
+        if (SmackApplication.prefs.isLoggedIn) {
             UserDataService.logout()
             userNameNavHeader.text = ""
             userEmailNavHeader.text = ""
@@ -128,7 +132,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addChannelButtonClicked(view: View) {
-        if (AuthService.isLoggedIn) {
+        if (SmackApplication.prefs.isLoggedIn) {
             showChannelSelectionDialog()
         }
     }
