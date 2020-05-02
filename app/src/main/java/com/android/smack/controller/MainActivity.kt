@@ -118,6 +118,15 @@ class MainActivity : AppCompatActivity() {
 
     fun updateChannelText(){
         mainChannelName.text = "#${selectedChannel?.name}"
+
+        if(selectedChannel!=null){
+            MessageService.getMessages(selectedChannel!!.id){complete->
+                if(complete){
+
+                }
+            }
+        }
+
     }
 
     private fun setupChannelAdapter() {
@@ -189,30 +198,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val onNewChannel = Emitter.Listener { args ->
-        // This is worker or background thread
-
-        // to update the UI with new Channel details we have to use runOnUiThread function
-        runOnUiThread {
-            val newChannel = Channel(args[0] as String, args[1] as String, args[2] as String)
-            MessageService.channels.add(newChannel)
-            channelAdapter.notifyDataSetChanged()
+    private val onNewChannel = Emitter.Listener { args -> // This is worker or background thread
+        if(SmackApplication.prefs.isLoggedIn){
+            // to update the UI with new Channel details we have to use runOnUiThread function
+            runOnUiThread {
+                val newChannel = Channel(args[0] as String, args[1] as String, args[2] as String)
+                MessageService.channels.add(newChannel)
+                channelAdapter.notifyDataSetChanged()
+            }
         }
     }
 
     private val onNewMessage = Emitter.Listener {args ->
-        runOnUiThread{
-            val messageBody = args[0] as String
-            val channelId = args[2] as String
-            val userName = args[3] as String
-            val avatar = args[4] as String
-            val avatarColor = args[5] as String
-            val messageId = args[6] as String
-            val messageTime = args[7] as String
+        if(SmackApplication.prefs.isLoggedIn){
+            runOnUiThread{
+                val channelId = args[2] as String
+                if(channelId == selectedChannel?.id){
+                    val messageBody = args[0] as String
+                    val userName = args[3] as String
+                    val avatar = args[4] as String
+                    val avatarColor = args[5] as String
+                    val messageId = args[6] as String
+                    val messageTime = args[7] as String
 
-            val newMessage = Message(messageBody,channelId,userName,avatar,avatarColor,messageId,messageTime)
-            MessageService.messages.add(newMessage)
-            Log.d("MESSAGE",newMessage.message)
+                    val newMessage = Message(messageBody,channelId,userName,avatar,avatarColor,messageId,messageTime)
+                    MessageService.messages.add(newMessage)
+                }
+
+            }
         }
     }
 }
