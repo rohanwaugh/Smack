@@ -11,6 +11,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.android.smack.R
 import com.android.smack.services.AuthService
 import com.android.smack.utilities.BROADCAST_USER_DATA_CHANGE
+import com.android.smack.utilities.hide
+import com.android.smack.utilities.show
 import kotlinx.android.synthetic.main.activity_create_user.*
 import java.util.*
 
@@ -22,7 +24,7 @@ class CreateUserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_user)
-        createSpinner.visibility = View.INVISIBLE
+        createSpinner.hide()
     }
 
 
@@ -108,9 +110,10 @@ class CreateUserActivity : AppCompatActivity() {
 
     private fun enableSpinner(isEnable: Boolean) {
         if (isEnable) {
-            createSpinner.visibility = View.VISIBLE
+            createSpinner.show()
+            createSpinner.show()
         } else {
-            createSpinner.visibility = View.INVISIBLE
+            createSpinner.hide()
         }
         createUserButton.isEnabled = !isEnable
         createAvatarImage.isEnabled = !isEnable

@@ -9,6 +9,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.android.smack.R
 import com.android.smack.services.AuthService
+import com.android.smack.utilities.hide
+import com.android.smack.utilities.show
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
@@ -16,7 +18,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        loginSpinner.visibility = View.INVISIBLE
+        loginSpinner.hide()
     }
 
 
@@ -63,9 +65,9 @@ class LoginActivity : AppCompatActivity() {
 
     private fun enableSpinner(isEnable: Boolean) {
         if (isEnable) {
-            loginSpinner.visibility = View.VISIBLE
+            loginSpinner.show()
         } else {
-            loginSpinner.visibility = View.INVISIBLE
+            loginSpinner.hide()
         }
         loginButton.isEnabled = !isEnable
         signUpButton.isEnabled = !isEnable

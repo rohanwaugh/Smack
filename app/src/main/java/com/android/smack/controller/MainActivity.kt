@@ -156,7 +156,6 @@ class MainActivity : AppCompatActivity() {
             userImageNavHeader.setImageResource(R.drawable.profiledefault)
             loginBtnNavHeader.text = getString(R.string.login_button_text)
             mainChannelName.text = getString(R.string.please_login_text)
-            drawer_layout.closeDrawer(GravityCompat.START)
         } else {
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
